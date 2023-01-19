@@ -199,8 +199,8 @@ class P2PNet(nn.Module):
         # the number of all anchor points
         num_anchor_points = row * line
 
-        self.regression = RegressionModel(num_features_in = 512, num_anchor_points=num_anchor_points)
-        self.classification = ClassificationModel(num_features_in = 512, \
+        self.regression = RegressionModel(num_features_in = 1536, num_anchor_points=num_anchor_points)
+        self.classification = ClassificationModel(num_features_in = 1536, \
                                             num_classes=self.num_classes, \
                                             num_anchor_points=num_anchor_points)
 
