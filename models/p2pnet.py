@@ -199,20 +199,20 @@ class P2PNet(nn.Module):
         # the number of all anchor points
         num_anchor_points = row * line
 
-        self.regression = RegressionModel(num_features_in = 1536, num_anchor_points=num_anchor_points)
-        self.classification = ClassificationModel(num_features_in = 1536, \
+        self.regression = RegressionModel(num_features_in = 384, num_anchor_points=num_anchor_points)
+        self.classification = ClassificationModel(num_features_in = 384, \
                                             num_classes=self.num_classes, \
                                             num_anchor_points=num_anchor_points)
 
         self.anchor_points = AnchorPoints(pyramid_levels=[3,], row=row, line=line)
 
-        self.fpn = Decoder(384, 768, 1536)
+        self.fpn = Decoder(192, 384, 768)
 
     def forward(self, samples: NestedTensor):
         # get the backbone features
         features = self.backbone(samples)
         # forward the feature pyramid
-        features_fpn = self.fpn([features[1], features[2], features[3]])
+        features_fpn = self.fpn([features[0], features[1], features[2]])
 
         batch_size = features[0].shape[0]
         # run the regression and classification branch
