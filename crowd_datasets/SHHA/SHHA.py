@@ -64,8 +64,13 @@ class SHHA(Dataset):
             if scale * min_size > 256:
                 img = torch.nn.functional.upsample_bilinear(img.unsqueeze(0), scale_factor=scale).squeeze(0)
                 point *= scale
+        if min(img.shape[1:]) < 256:
+            scale = (256 // min(img.shape[1:])) + 1
+            img = torch.nn.functional.upsample_bilinear(img.unsqueeze(0), scale_factor = scale).squeeze(0)
+            point *= scale
         # random crop augumentaiton
         if self.train and self.patch:
+    
             img, point = random_crop(img, point)
             for i, _ in enumerate(point):
                 point[i] = torch.Tensor(point[i])
