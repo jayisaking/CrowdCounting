@@ -49,31 +49,47 @@ class RegressionModel(nn.Module):
         self.conv1 = nn.Conv2d(num_features_in, feature_size, kernel_size=3, padding=1)
         self.act1 = nn.ReLU()
 
-        self.conv2 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
-        self.act2 = nn.ReLU()
+        # self.conv2 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        # self.act2 = nn.ReLU()
 
-        self.conv3 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
-        self.act3 = nn.ReLU()
+        # self.conv3 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        # self.act3 = nn.ReLU()
 
-        self.conv4 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
-        self.act4 = nn.ReLU()
+        # self.conv4 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        # self.act4 = nn.ReLU()
 
         self.res1 = ResidualBlock(feature_size, feature_size)
         
         self.res2 = ResidualBlock(feature_size, feature_size)
         
+        self.res3 = ResidualBlock(feature_size, feature_size)
+         
+        self.res4 = ResidualBlock(feature_size, feature_size)
+        
+        self.res5 = ResidualBlock(feature_size, feature_size)
+        
+        self.res6 = ResidualBlock(feature_size, feature_size)
+        
         self.output = nn.Conv2d(feature_size, num_anchor_points * 2, kernel_size=3, padding=1)
     # sub-branch forward
     def forward(self, x):
         out = self.conv1(x)
-        out = self.act1(out)
+        # out = self.act1(out)
 
         out = self.res1(out)
 
         out = self.res2(out)
+        
+        out = self.res3(out)
+        
+        out = self.res4(out)
+    
+        out = self.res5(out)
+        
+        out = self.res6(out)
 
-        out = self.conv2(out)
-        out = self.act2(out)
+        # out = self.conv2(out)
+        # out = self.act2(out)
 
         out = self.output(out)
 
@@ -92,34 +108,50 @@ class ClassificationModel(nn.Module):
         self.conv1 = nn.Conv2d(num_features_in, feature_size, kernel_size=3, padding=1)
         self.act1 = nn.ReLU()
 
-        self.conv2 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
-        self.act2 = nn.ReLU()
+        # self.conv2 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        # self.act2 = nn.ReLU()
 
-        self.conv3 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
-        self.act3 = nn.ReLU()
+        # self.conv3 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        # self.act3 = nn.ReLU()
 
-        self.conv4 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
-        self.act4 = nn.ReLU()
+        # self.conv4 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        # self.act4 = nn.ReLU()
 
         self.res1 = ResidualBlock(feature_size, feature_size)
         
         self.res2 = ResidualBlock(feature_size, feature_size)
+        
+        self.res3 = ResidualBlock(feature_size, feature_size)
+        
+        self.res4 = ResidualBlock(feature_size, feature_size)
+        
+        self.res5 = ResidualBlock(feature_size, feature_size)
+        
+        self.res6 = ResidualBlock(feature_size, feature_size)
 
         self.output = nn.Conv2d(feature_size, num_anchor_points * num_classes, kernel_size=3, padding=1)
         self.output_act = nn.Sigmoid()
     # sub-branch forward
     def forward(self, x):
         out = self.conv1(x)
-        out = self.act1(out)
+        # out = self.act1(out)
 
 
         out = self.res1(out)
 
         out = self.res2(out)
+        
+        out = self.res3(out)
+        
+        out = self.res4(out)
+        
+        out = self.res5(out)
+        
+        out = self.res6(out)
 
 
-        out = self.conv2(out)
-        out = self.act2(out)
+        # out = self.conv2(out)
+        # out = self.act2(out)
 
         out = self.output(out)
 
@@ -246,14 +278,14 @@ class P2PNet(nn.Module):
         # the number of all anchor points
         num_anchor_points = row * line
 
-        self.regression = RegressionModel(num_features_in = 384, num_anchor_points=num_anchor_points)
-        self.classification = ClassificationModel(num_features_in = 384, \
+        self.regression = RegressionModel(num_features_in = 512, num_anchor_points=num_anchor_points)
+        self.classification = ClassificationModel(num_features_in = 512, \
                                             num_classes=self.num_classes, \
                                             num_anchor_points=num_anchor_points)
 
         self.anchor_points = AnchorPoints(pyramid_levels=[3,], row=row, line=line)
 
-        self.fpn = Decoder(192, 384, 768)
+        self.fpn = Decoder(128, 256, 512)
 
     def forward(self, samples: NestedTensor):
         # get the backbone features
@@ -267,7 +299,7 @@ class P2PNet(nn.Module):
         classification = self.classification(features_fpn[1])
         anchor_points = self.anchor_points(samples).repeat(batch_size, 1, 1)
         # decode the points as prediction
-        output_coord = regression + anchor_points
+        output_coord = regression + anchor_points.to(regression.device)
         output_class = classification
         out = {'pred_logits': output_class, 'pred_points': output_coord}
        

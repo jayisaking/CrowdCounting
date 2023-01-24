@@ -68,15 +68,17 @@ def get_args_parser():
     parser.add_argument('--start_epoch', default = 0, type=int, metavar='N',
                         help='start epoch')
     parser.add_argument('--eval', action='store_true')
-    parser.add_argument('--num_workers', default = 8, type=int)
+    parser.add_argument('--num_workers', default = 2, type=int)
     parser.add_argument('--eval_freq', default = 5, type=int,
                         help='frequency of evaluation, default setting is evaluating in every 5 epoch')
     parser.add_argument('--gpu_id', default = 0, type=int, help='the gpu used for training')
+    parser.add_argument('--mps', default = 'none')
 
     return parser
 
 def main(args):
-    os.environ["CUDA_VISIBLE_DEVICES"] = '{}'.format(args.gpu_id)
+    if args.mps == 'none':
+        os.environ["CUDA_VISIBLE_DEVICES"] = '{}'.format(args.gpu_id)
     # create the logging file
     run_log_name = os.path.join(args.output_dir, 'run_log.txt')
     with open(run_log_name, "w") as log_file:
@@ -88,7 +90,10 @@ def main(args):
     print(args)
     with open(run_log_name, "a") as log_file:
         log_file.write("{}".format(args))
-    device = torch.device('cuda')
+    if args.mps == 'none':
+        device = torch.device('cuda')
+    else:
+        device = torch.device('mps')
     # fix the seed for reproducibility
     seed = args.seed + utils.get_rank()
     torch.manual_seed(seed)

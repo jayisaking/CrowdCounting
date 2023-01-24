@@ -113,7 +113,7 @@ def load_data(img_gt_path, train):
     return img, np.array(points)
 
 # random crop augumentation
-def random_crop(img, den, num_patch = 16):
+def random_crop(img, den, num_patch = 4):
     half_h = 256
     half_w = 256
     result_img = np.zeros([num_patch, img.shape[0], half_h, half_w])
