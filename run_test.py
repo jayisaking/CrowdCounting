@@ -43,7 +43,7 @@ def main(args, debug=False):
     os.environ["CUDA_VISIBLE_DEVICES"] = '{}'.format(args.gpu_id)
 
     print(args)
-    device = torch.device('cuda')
+    device = torch.device('cuda') if torch.cuda.is_available() else 'cpu'
     # get the P2PNet
     model = build_model(args)
     # move to GPU
@@ -61,7 +61,7 @@ def main(args, debug=False):
     ])
 
     # set your image path here
-    img_path = "./vis/demo1.jpg"
+    img_path = "/Users/jaysun/Downloads/CCP4/data/test/IMG_4.jpg"
     # load the images
     img_raw = Image.open(img_path).convert('RGB')
     # round the size

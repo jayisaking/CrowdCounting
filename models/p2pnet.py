@@ -11,7 +11,6 @@ from .matcher import build_matcher_crowd
 
 import numpy as np
 import time
-
 def conv3x3(in_channels, out_channels, stride = 1):
     return nn.Conv2d(in_channels, out_channels, kernel_size = 3, 
                      stride = stride, padding = 1, bias = True)
@@ -39,8 +38,7 @@ class ResidualBlock(nn.Module):
         out += residual
         out = self.relu(out)
         return out
-
-
+    
 # the network frmawork of the regression branch
 class RegressionModel(nn.Module):
     def __init__(self, num_features_in, num_anchor_points=4, feature_size=256):
@@ -49,47 +47,57 @@ class RegressionModel(nn.Module):
         self.conv1 = nn.Conv2d(num_features_in, feature_size, kernel_size=3, padding=1)
         self.act1 = nn.ReLU()
 
-        # self.conv2 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
-        # self.act2 = nn.ReLU()
+        self.conv2 = nn.Conv2d(feature_size, feature_size, kernel_size = 1, padding = 0)
+        self.act2 = nn.ReLU()
 
-        # self.conv3 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
-        # self.act3 = nn.ReLU()
+        self.conv3 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        self.act3 = nn.ReLU()
 
-        # self.conv4 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
-        # self.act4 = nn.ReLU()
+        self.output = nn.Conv2d(feature_size, num_anchor_points * 2, kernel_size=3, padding=1)  
+        
+        ''' Not Used'''
+        self.conv4 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        self.act4 = nn.ReLU()
+        
+        self.conv5 = nn.Conv2d(feature_size, feature_size, kernel_size = 1, padding = 0)
+        self.act5 = nn.ReLU()
 
-        self.res1 = ResidualBlock(feature_size, feature_size)
+        self.conv6 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        self.act6 = nn.ReLU()
         
-        self.res2 = ResidualBlock(feature_size, feature_size)
+        self.conv7 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        self.act7 = nn.ReLU()
         
-        self.res3 = ResidualBlock(feature_size, feature_size)
-         
-        self.res4 = ResidualBlock(feature_size, feature_size)
+        self.conv8 = nn.Conv2d(feature_size, feature_size, kernel_size = 1, padding = 0)
+        self.act8 = nn.ReLU()
+
+        self.conv9 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        self.act9 = nn.ReLU()
+        ''''''
+
         
-        self.res5 = ResidualBlock(feature_size, feature_size)
-        
-        self.res6 = ResidualBlock(feature_size, feature_size)
-        
-        self.output = nn.Conv2d(feature_size, num_anchor_points * 2, kernel_size=3, padding=1)
     # sub-branch forward
     def forward(self, x):
         out = self.conv1(x)
-        # out = self.act1(out)
-
-        out = self.res1(out)
-
-        out = self.res2(out)
+        out = self.act1(out)
+        out = self.conv2(out)
+        out = self.act2(out)
+        out = self.conv3(out)
+        out = self.act3(out)
         
-        out = self.res3(out)
+        # out = self.conv4(out)
+        # out = self.act4(out)
+        # out = self.conv5(out)
+        # out = self.act5(out)
+        # out = self.conv6(out)
+        # out = self.act6(out)
         
-        out = self.res4(out)
-    
-        out = self.res5(out)
-        
-        out = self.res6(out)
-
-        # out = self.conv2(out)
-        # out = self.act2(out)
+        # out = self.conv7(out)
+        # out = self.act7(out)
+        # out = self.conv8(out)
+        # out = self.act8(out)
+        # out = self.conv9(out)
+        # out = self.act9(out)
 
         out = self.output(out)
 
@@ -108,53 +116,61 @@ class ClassificationModel(nn.Module):
         self.conv1 = nn.Conv2d(num_features_in, feature_size, kernel_size=3, padding=1)
         self.act1 = nn.ReLU()
 
-        # self.conv2 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
-        # self.act2 = nn.ReLU()
+        
+        self.conv2 = nn.Conv2d(feature_size, feature_size, kernel_size = 1, padding=0)
+        self.act2 = nn.ReLU()
 
-        # self.conv3 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
-        # self.act3 = nn.ReLU()
-
-        # self.conv4 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
-        # self.act4 = nn.ReLU()
-
-        self.res1 = ResidualBlock(feature_size, feature_size)
-        
-        self.res2 = ResidualBlock(feature_size, feature_size)
-        
-        self.res3 = ResidualBlock(feature_size, feature_size)
-        
-        self.res4 = ResidualBlock(feature_size, feature_size)
-        
-        self.res5 = ResidualBlock(feature_size, feature_size)
-        
-        self.res6 = ResidualBlock(feature_size, feature_size)
+        self.conv3 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        self.act3 = nn.ReLU()
 
         self.output = nn.Conv2d(feature_size, num_anchor_points * num_classes, kernel_size=3, padding=1)
         self.output_act = nn.Sigmoid()
+        
+        '''Not Used'''
+        self.conv4 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        self.act4 = nn.ReLU()
+        
+        self.conv5 = nn.Conv2d(feature_size, feature_size, kernel_size = 1, padding = 0)
+        self.act5 = nn.ReLU()
+
+        self.conv6 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        self.act6 = nn.ReLU()
+        
+        self.conv7 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        self.act7 = nn.ReLU()
+        
+        self.conv8 = nn.Conv2d(feature_size, feature_size, kernel_size = 1, padding = 0)
+        self.act8 = nn.ReLU()
+
+        self.conv9 = nn.Conv2d(feature_size, feature_size, kernel_size=3, padding=1)
+        self.act9 = nn.ReLU()
+        ''''''
+
     # sub-branch forward
     def forward(self, x):
         out = self.conv1(x)
-        # out = self.act1(out)
-
-
-        out = self.res1(out)
-
-        out = self.res2(out)
+        out = self.act1(out)
+        out = self.conv2(out)
+        out = self.act2(out)
+        out = self.conv3(out)
+        out = self.act3(out)
         
-        out = self.res3(out)
+        # out = self.conv4(out)
+        # out = self.act4(out)
+        # out = self.conv5(out)
+        # out = self.act5(out)
+        # out = self.conv6(out)
+        # out = self.act6(out)
         
-        out = self.res4(out)
+        # out = self.conv7(out)
+        # out = self.act7(out)
+        # out = self.conv8(out)
+        # out = self.act8(out)
+        # out = self.conv9(out)
+        # out = self.act9(out)
         
-        out = self.res5(out)
-        
-        out = self.res6(out)
-
-
-        # out = self.conv2(out)
-        # out = self.act2(out)
-
         out = self.output(out)
-
+        # out = self.output_act(out)
         out1 = out.permute(0, 2, 3, 1)
 
         batch_size, width, height, _ = out1.shape
@@ -232,15 +248,19 @@ class AnchorPoints(nn.Module):
             return torch.from_numpy(all_anchor_points.astype(np.float32))
 
 class Decoder(nn.Module):
-    def __init__(self, C3_size, C4_size, C5_size, feature_size = 512):
+    def __init__(self, C3_size, C4_size, C5_size, feature_size=256):
         super(Decoder, self).__init__()
 
         # upsample C5 to get P5 from the FPN paper
-        self.P5_1 = nn.Conv2d(C5_size, feature_size, kernel_size=1, stride=1, padding=0)
+        self.P5_0 = nn.Conv2d(C5_size, C5_size, kernel_size = 1, stride = 1, padding = 0)
+        self.P5_0_act = nn.ReLU()
+        self.P5_1 = nn.Conv2d(C5_size, feature_size, kernel_size = 1, stride = 1, padding=0)
         self.P5_upsampled = nn.Upsample(scale_factor=2, mode='nearest')
         self.P5_2 = nn.Conv2d(feature_size, feature_size, kernel_size=3, stride=1, padding=1)
 
         # add P5 elementwise to C4
+        self.P4_0 = nn.Conv2d(C4_size, C4_size, kernel_size = 1, stride = 1, padding = 0)
+        self.P4_0_act = nn.ReLU()
         self.P4_1 = nn.Conv2d(C4_size, feature_size, kernel_size=1, stride=1, padding=0)
         self.P4_upsampled = nn.Upsample(scale_factor=2, mode='nearest')
         self.P4_2 = nn.Conv2d(feature_size, feature_size, kernel_size=3, stride=1, padding=1)
@@ -253,11 +273,15 @@ class Decoder(nn.Module):
 
     def forward(self, inputs):
         C3, C4, C5 = inputs
-
+        
+        C5 = self.P5_0(C5)
+        C5 = self.P5_0_act(C5)
         P5_x = self.P5_1(C5)
         P5_upsampled_x = self.P5_upsampled(P5_x)
         P5_x = self.P5_2(P5_x)
 
+        C4 = self.P4_0(C4)
+        C4 = self.P4_0_act(C4)
         P4_x = self.P4_1(C4)
         P4_x = P5_upsampled_x + P4_x
         P4_upsampled_x = self.P4_upsampled(P4_x)
@@ -278,20 +302,24 @@ class P2PNet(nn.Module):
         # the number of all anchor points
         num_anchor_points = row * line
 
-        self.regression = RegressionModel(num_features_in = 512, num_anchor_points=num_anchor_points)
-        self.classification = ClassificationModel(num_features_in = 512, \
+        self.regression = RegressionModel(num_features_in=256, num_anchor_points=num_anchor_points)
+        self.classification = ClassificationModel(num_features_in=256, \
                                             num_classes=self.num_classes, \
                                             num_anchor_points=num_anchor_points)
 
         self.anchor_points = AnchorPoints(pyramid_levels=[3,], row=row, line=line)
 
-        self.fpn = Decoder(128, 256, 512)
+        # self.fpn = Decoder(256, 512, 512)
+        self.fpn = Decoder(96, 192, 384)
 
     def forward(self, samples: NestedTensor):
         # get the backbone features
         features = self.backbone(samples)
+        # for i in features:
+        #     print(i.shape)
+        # exit(0)
         # forward the feature pyramid
-        features_fpn = self.fpn([features[0], features[1], features[2]])
+        features_fpn = self.fpn([features[1], features[2], features[3]])
 
         batch_size = features[0].shape[0]
         # run the regression and classification branch
@@ -299,7 +327,7 @@ class P2PNet(nn.Module):
         classification = self.classification(features_fpn[1])
         anchor_points = self.anchor_points(samples).repeat(batch_size, 1, 1)
         # decode the points as prediction
-        output_coord = regression + anchor_points.to(regression.device)
+        output_coord = regression + anchor_points
         output_class = classification
         out = {'pred_logits': output_class, 'pred_points': output_coord}
        

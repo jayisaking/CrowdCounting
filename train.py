@@ -17,13 +17,13 @@ warnings.filterwarnings('ignore')
 
 def get_args_parser():
     parser = argparse.ArgumentParser('Set parameters for training P2PNet', add_help=False)
-    parser.add_argument('--lr', default = 1e-4, type=float)
-    parser.add_argument('--lr_backbone', default = 1e-5, type=float)
-    parser.add_argument('--batch_size', default = 16, type=int)
-    parser.add_argument('--weight_decay', default = 1e-4, type=float)
-    parser.add_argument('--epochs', default = 3600, type=int)
-    parser.add_argument('--lr_drop', default = 3600, type=int)
-    parser.add_argument('--clip_max_norm', default = 0.1, type=float,
+    parser.add_argument('--lr', default=1e-4, type=float)
+    parser.add_argument('--lr_backbone', default=1e-5, type=float)
+    parser.add_argument('--batch_size', default=8, type=int)
+    parser.add_argument('--weight_decay', default=1e-4, type=float)
+    parser.add_argument('--epochs', default=3500, type=int)
+    parser.add_argument('--lr_drop', default=3500, type=int)
+    parser.add_argument('--clip_max_norm', default=0.1, type=float,
                         help='gradient clipping max norm')
 
     # Model parameters
@@ -31,7 +31,7 @@ def get_args_parser():
                         help="Path to the pretrained model. If set, only the mask head will be trained")
 
     # * Backbone
-    parser.add_argument('--backbone', default='convnext', type=str,
+    parser.add_argument('--backbone', default='vgg16_bn', type=str,
                         help="Name of the convolutional backbone to use")
 
     # * Matcher
@@ -46,9 +46,9 @@ def get_args_parser():
 
     parser.add_argument('--eos_coef', default=0.5, type=float,
                         help="Relative classification weight of the no-object class")
-    parser.add_argument('--row', default = 3, type=int,
+    parser.add_argument('--row', default=2, type=int,
                         help="row number of anchor points")
-    parser.add_argument('--line', default = 3, type=int,
+    parser.add_argument('--line', default=2, type=int,
                         help="line number of anchor points")
 
     # dataset parameters
@@ -63,22 +63,20 @@ def get_args_parser():
     parser.add_argument('--tensorboard_dir', default='./runs',
                         help='path where to save, empty for no saving')
 
-    parser.add_argument('--seed', default = 42, type=int)
+    parser.add_argument('--seed', default=42, type=int)
     parser.add_argument('--resume', default='', help='resume from checkpoint')
-    parser.add_argument('--start_epoch', default = 0, type=int, metavar='N',
+    parser.add_argument('--start_epoch', default=0, type=int, metavar='N',
                         help='start epoch')
     parser.add_argument('--eval', action='store_true')
-    parser.add_argument('--num_workers', default = 2, type=int)
-    parser.add_argument('--eval_freq', default = 5, type=int,
+    parser.add_argument('--num_workers', default=8, type=int)
+    parser.add_argument('--eval_freq', default=5, type=int,
                         help='frequency of evaluation, default setting is evaluating in every 5 epoch')
-    parser.add_argument('--gpu_id', default = 0, type=int, help='the gpu used for training')
-    parser.add_argument('--mps', default = 'none')
+    parser.add_argument('--gpu_id', default=0, type=int, help='the gpu used for training')
 
     return parser
 
 def main(args):
-    if args.mps == 'none':
-        os.environ["CUDA_VISIBLE_DEVICES"] = '{}'.format(args.gpu_id)
+    os.environ["CUDA_VISIBLE_DEVICES"] = '{}'.format(args.gpu_id)
     # create the logging file
     run_log_name = os.path.join(args.output_dir, 'run_log.txt')
     with open(run_log_name, "w") as log_file:
@@ -90,10 +88,7 @@ def main(args):
     print(args)
     with open(run_log_name, "a") as log_file:
         log_file.write("{}".format(args))
-    if args.mps == 'none':
-        device = torch.device('cuda')
-    else:
-        device = torch.device('mps')
+    device = torch.device('cuda')
     # fix the seed for reproducibility
     seed = args.seed + utils.get_rank()
     torch.manual_seed(seed)
@@ -118,7 +113,7 @@ def main(args):
         },
     ]
     # Adam is used by default
-    optimizer = torch.optim.Adam(param_dicts, lr=args.lr)
+    optimizer = torch.optim.AdamW(param_dicts, lr=args.lr)
     lr_scheduler = torch.optim.lr_scheduler.StepLR(optimizer, args.lr_drop)
     # create the dataset
     loading_data = build_dataset(args=args)
