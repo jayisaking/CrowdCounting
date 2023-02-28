@@ -1,4 +1,4 @@
-##P2PNet SOTA
+## P2PNet SOTA
 There are three parts of the model, like the original: backbone, decoder and Regression & Classification, which I denote as Back, Decode, and R&C (I used the same structure in both Classification and Regression.)
 ## Block Description
 Here are some blocks design that I will mention later.
