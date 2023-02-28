@@ -40,7 +40,7 @@ class ResidualBlock(nn.Module):
  out = self.act2(out)
  out = self.output(out)
 ```
-##Ablation Study
+## Ablation Study
 
 | Back | Decode | R&C | learning rate (down stream / backbone) | MSE | MAE | Input Resolution | Activation |
 | ---- | -----  | --- | -------------------------------------  | --- | --- | ---------------- | ---------- |
@@ -62,7 +62,7 @@ class ResidualBlock(nn.Module):
 
 
 *If I didn't mention some hyperparameters, they remain the same as default in P2PNet Original Code.  
-##P.S.
+## P.S.
 1.  To use my design, specify `--backbone convnext_tiny` in train.py/ run_test.py
 2.  The log of SOTA result (52.53/ 84.85) is in the log folder. Since the training process was accidentally interrupted by technical issues, the log starts from epochs 983 (though it says from 0).
 3.  Testing MAE/ MSE might differ from the SOTA result due to some randomness.
